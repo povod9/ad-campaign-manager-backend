@@ -1,4 +1,7 @@
 package com.povod9.adcampaign.dto;
 
-public class PrincipalDto {
+public record PrincipalDto(
+        Long id,
+        String email
+) {
 }
