@@ -7,8 +7,11 @@ import jakarta.persistence.EntityNotFoundException;
 import org.apache.coyote.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+import java.util.Objects;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -35,6 +38,12 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ExceptionDto> handleAccessDenied(AccessDeniedException e){
         ExceptionDto exceptionDto = new ExceptionDto("Forbidden", e.getMessage());
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(exceptionDto);
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ExceptionDto> handleMethodArgumentNotValid(MethodArgumentNotValidException e){
+        ExceptionDto exceptionDto = new ExceptionDto("Validation failed", Objects.requireNonNull(e.getFieldError()).getDefaultMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(exceptionDto);
     }
 
 
