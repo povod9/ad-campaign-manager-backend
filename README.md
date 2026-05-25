@@ -115,6 +115,7 @@ Your Token
   "keywords": ["toothbrush", "hygiene"],
   "bidAmount": 250,
   "campaignFund": 1000,
+  "status": "ON",
   "town": ["Warsaw", "Lublin"],
   "radius": 15,
   "productId": 1
@@ -151,7 +152,7 @@ Your Token
   "name": "Lola",
   "keywords": ["new", "campaign"],
   "bidAmount": 300,
-  "campaignFund": 2500,
+  "status": "OFF",
   "town": ["Cracow"],
   "radius": 18,
   "productId": 1
@@ -179,7 +180,6 @@ Your Token
   "sellerName": "John Freeman",
   "email": "johnfreeman@example.com",
   "password": "NewSecret123!",
-  "emeraldAmountFunds": 5000
 }
 ```
 
