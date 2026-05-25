@@ -12,6 +12,7 @@ import com.povod9.adcampaign.repository.SellerRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -26,6 +27,7 @@ public class ProductServiceImpl implements ProductService{
     private final ProductMapper mapper;
 
     @Override
+    @Transactional
     public ProductResponse createProduct(ProductRequest productRequest) {
         SellerEntity sellerEntity = getCurrentSellerOrThrow();
 
@@ -58,6 +60,7 @@ public class ProductServiceImpl implements ProductService{
     }
 
     @Override
+    @Transactional
     public ProductResponse updateProductById(Long id, ProductRequest productRequest) {
         PrincipalDto principalDto = getCurrentPrincipalOrThrow();
         ProductEntity productEntity = productRepository.findById(id)

@@ -63,9 +63,9 @@ public class SellerServiceImpl implements SellerService{
         SellerEntity sellerEntity = repository.findById(principalDto.id())
                 .orElseThrow(() -> new EntityNotFoundException("Cannot find seller by id: " + principalDto.id()));
 
-        if(sellerUpdateRequest.sellerName() != null){
-            sellerEntity.setSellerName(sellerUpdateRequest.sellerName());
-        }
+//        if(sellerUpdateRequest.sellerName() != null){
+//            sellerEntity.setSellerName(sellerUpdateRequest.sellerName());
+//        }
 
         if(sellerUpdateRequest.email() != null){
             if (sellerUpdateRequest.email().equals(sellerEntity.getEmail())){
@@ -84,11 +84,10 @@ public class SellerServiceImpl implements SellerService{
             sellerEntity.setPassword(passwordEncoder.encode(sellerUpdateRequest.password()));
         }
 
-        if(sellerUpdateRequest.emeraldAmountFunds() != null){
-            sellerEntity.setEmeraldAmountFunds(sellerUpdateRequest.emeraldAmountFunds());
-        }
-
-        repository.save(sellerEntity);
+//        if(sellerUpdateRequest.emeraldAmountFunds() != null){
+//            sellerEntity.setEmeraldAmountFunds(sellerUpdateRequest.emeraldAmountFunds());
+//        }
+        mapper.updateEntityFromResponse(sellerUpdateRequest, sellerEntity);
         return mapper.entityToResponse(sellerEntity);
     }
 }

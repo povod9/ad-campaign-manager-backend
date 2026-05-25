@@ -15,7 +15,8 @@ public record CampaignResponse(
         Status status,
         List<TownName> town,
         Integer radius,
-        Long productId
+        Long productId,
+        BigDecimal sellerBalance
 ) {
 
 }
