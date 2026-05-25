@@ -15,6 +15,7 @@ import java.util.List;
 public interface CampaignMapper {
 
     @Mapping(source = "product.productId", target = "productId")
+    @Mapping(source = "product.seller.emeraldAmountFunds", target = "sellerBalance")
     CampaignResponse entityToResponse(CampaignEntity campaignEntity);
     List<CampaignResponse> listEntityToResponse(List<CampaignEntity> campaignEntities);
     @Mapping(target = "campaignFund", ignore = true)
