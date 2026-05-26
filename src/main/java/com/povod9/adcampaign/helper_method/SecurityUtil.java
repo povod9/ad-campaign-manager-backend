@@ -7,11 +7,11 @@ import org.springframework.security.core.context.SecurityContextHolder;
 
 public class SecurityUtil {
 
-    public static PrincipalDto getCurrentPrincipalOrThrow(){
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if(authentication == null || authentication.getPrincipal() == null){
-            throw new InvalidCredentialsException("You are unauthorized");
-        }
-        return (PrincipalDto) authentication.getPrincipal();
+  public static PrincipalDto getCurrentPrincipalOrThrow() {
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    if (authentication == null || authentication.getPrincipal() == null) {
+      throw new InvalidCredentialsException("You are unauthorized");
     }
+    return (PrincipalDto) authentication.getPrincipal();
+  }
 }

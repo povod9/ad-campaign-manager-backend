@@ -13,20 +13,22 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/sellers")
 public class SellerController {
 
-    private final SellerService service;
+  private final SellerService service;
 
-    @PostMapping("/registration")
-    public ResponseEntity<SellerResponse> registerSellerAccount(@RequestBody @Valid SellerRequest seller){
-        return ResponseEntity.status(HttpStatus.CREATED).body(service.createSellerAccount(seller));
-    }
+  @PostMapping("/registration")
+  public ResponseEntity<SellerResponse> registerSellerAccount(
+      @RequestBody @Valid SellerRequest seller) {
+    return ResponseEntity.status(HttpStatus.CREATED).body(service.createSellerAccount(seller));
+  }
 
-    @PostMapping("/login")
-    public ResponseEntity<LoginResponse> loginSeller(@RequestBody @Valid LoginRequest login){
-        return ResponseEntity.ok(service.loginSeller(login));
-    }
+  @PostMapping("/login")
+  public ResponseEntity<LoginResponse> loginSeller(@RequestBody @Valid LoginRequest login) {
+    return ResponseEntity.ok(service.loginSeller(login));
+  }
 
-    @PutMapping
-    public ResponseEntity<SellerResponse> updateSeller(@RequestBody SellerUpdateRequest sellerUpdateRequest){
-        return ResponseEntity.ok(service.updateSeller(sellerUpdateRequest));
-    }
+  @PutMapping
+  public ResponseEntity<SellerResponse> updateSeller(
+      @RequestBody SellerUpdateRequest sellerUpdateRequest) {
+    return ResponseEntity.ok(service.updateSeller(sellerUpdateRequest));
+  }
 }

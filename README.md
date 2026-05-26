@@ -179,7 +179,7 @@ Your Token
 {
   "sellerName": "John Freeman",
   "email": "johnfreeman@example.com",
-  "password": "NewSecret123!",
+  "password": "NewSecret123!"
 }
 ```
 

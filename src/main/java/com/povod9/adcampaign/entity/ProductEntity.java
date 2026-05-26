@@ -14,15 +14,14 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode
 public class ProductEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long productId;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long productId;
 
-    @Column(nullable = false)
-    private String productName;
+  @Column(nullable = false)
+  private String productName;
 
-    @ManyToOne
-    @JoinColumn(name = "seller_id")
-    private SellerEntity seller;
-
+  @ManyToOne
+  @JoinColumn(name = "seller_id")
+  private SellerEntity seller;
 }

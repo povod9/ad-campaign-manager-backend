@@ -1,5 +1,7 @@
 package com.povod9.adcampaign.service;
 
+import static com.povod9.adcampaign.helper_method.SecurityUtil.getCurrentPrincipalOrThrow;
+
 import com.povod9.adcampaign.dto.*;
 import com.povod9.adcampaign.entity.SellerEntity;
 import com.povod9.adcampaign.exception.InvalidCredentialsException;
@@ -12,82 +14,81 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import static com.povod9.adcampaign.helper_method.SecurityUtil.getCurrentPrincipalOrThrow;
-
 @Service
 @RequiredArgsConstructor
-public class SellerServiceImpl implements SellerService{
+public class SellerServiceImpl implements SellerService {
 
-    private final SellerRepository repository;
-    private final PasswordEncoder passwordEncoder;
-    private final SellerMapper mapper;
-    private final JwtCore jwtCore;
+  private final SellerRepository repository;
+  private final PasswordEncoder passwordEncoder;
+  private final SellerMapper mapper;
+  private final JwtCore jwtCore;
 
-    @Override
-    @Transactional
-    public SellerResponse createSellerAccount(SellerRequest seller) {
-        if(repository.existsByEmail(seller.email())){
-            throw new IllegalArgumentException("Email already exists: " + seller.email());
-        }
-
-        SellerEntity createdSeller = new SellerEntity(
-                null,
-                seller.sellerName(),
-                seller.email(),
-                passwordEncoder.encode(seller.password()),
-                seller.emeraldAmountFunds()
-        );
-
-        SellerEntity savedSeller = repository.save(createdSeller);
-        return mapper.entityToResponse(savedSeller);
+  @Override
+  @Transactional
+  public SellerResponse createSellerAccount(SellerRequest seller) {
+    if (repository.existsByEmail(seller.email())) {
+      throw new IllegalArgumentException("Email already exists: " + seller.email());
     }
 
-    @Override
-    public LoginResponse loginSeller(LoginRequest login) {
-        SellerEntity sellerEntity = repository.findByEmail(login.email())
-                .orElseThrow(() -> new EntityNotFoundException("Cannot find seller by email: " + login.email()));
+    SellerEntity createdSeller =
+        new SellerEntity(
+            null,
+            seller.sellerName(),
+            seller.email(),
+            passwordEncoder.encode(seller.password()),
+            seller.emeraldAmountFunds());
 
-        if(passwordEncoder.matches(login.password(), sellerEntity.getPassword())){
-            return new LoginResponse(jwtCore.generateToken(sellerEntity), "Bearer");
-        }else {
-            throw new InvalidCredentialsException("Wrong password or email");
-        }
+    SellerEntity savedSeller = repository.save(createdSeller);
+    return mapper.entityToResponse(savedSeller);
+  }
+
+  @Override
+  public LoginResponse loginSeller(LoginRequest login) {
+    SellerEntity sellerEntity =
+        repository
+            .findByEmail(login.email())
+            .orElseThrow(
+                () -> new EntityNotFoundException("Cannot find seller by email: " + login.email()));
+
+    if (passwordEncoder.matches(login.password(), sellerEntity.getPassword())) {
+      return new LoginResponse(jwtCore.generateToken(sellerEntity), "Bearer");
+    } else {
+      throw new InvalidCredentialsException("Wrong password or email");
+    }
+  }
+
+  @Override
+  @Transactional
+  public SellerResponse updateSeller(SellerUpdateRequest sellerUpdateRequest) {
+
+    PrincipalDto principalDto = getCurrentPrincipalOrThrow();
+
+    SellerEntity sellerEntity =
+        repository
+            .findById(principalDto.id())
+            .orElseThrow(
+                () ->
+                    new EntityNotFoundException("Cannot find seller by id: " + principalDto.id()));
+
+    if (sellerUpdateRequest.email() != null) {
+      if (sellerUpdateRequest.email().equals(sellerEntity.getEmail())) {
+        throw new IllegalArgumentException(
+            "Email cannot be the same: " + sellerUpdateRequest.email());
+      }
+      if (repository.existsByEmail(sellerUpdateRequest.email())) {
+        throw new IllegalArgumentException("Email already exist:" + sellerUpdateRequest.email());
+      }
+      sellerEntity.setEmail(sellerUpdateRequest.email());
     }
 
-    @Override
-    @Transactional
-    public SellerResponse updateSeller(SellerUpdateRequest sellerUpdateRequest) {
-
-        PrincipalDto principalDto = getCurrentPrincipalOrThrow();
-
-        SellerEntity sellerEntity = repository.findById(principalDto.id())
-                .orElseThrow(() -> new EntityNotFoundException("Cannot find seller by id: " + principalDto.id()));
-
-//        if(sellerUpdateRequest.sellerName() != null){
-//            sellerEntity.setSellerName(sellerUpdateRequest.sellerName());
-//        }
-
-        if(sellerUpdateRequest.email() != null){
-            if (sellerUpdateRequest.email().equals(sellerEntity.getEmail())){
-                throw new IllegalArgumentException("Email cannot be the same: " + sellerUpdateRequest.email());
-            }
-            if (repository.existsByEmail(sellerUpdateRequest.email())){
-                throw new IllegalArgumentException("Email already exist:" + sellerUpdateRequest.email());
-            }
-            sellerEntity.setEmail(sellerUpdateRequest.email());
-        }
-
-        if(sellerUpdateRequest.password() != null){
-            if(passwordEncoder.matches(sellerUpdateRequest.password(), sellerEntity.getPassword())){
-                throw new IllegalArgumentException("Password cannot be the same");
-            }
-            sellerEntity.setPassword(passwordEncoder.encode(sellerUpdateRequest.password()));
-        }
-
-//        if(sellerUpdateRequest.emeraldAmountFunds() != null){
-//            sellerEntity.setEmeraldAmountFunds(sellerUpdateRequest.emeraldAmountFunds());
-//        }
-        mapper.updateEntityFromResponse(sellerUpdateRequest, sellerEntity);
-        return mapper.entityToResponse(sellerEntity);
+    if (sellerUpdateRequest.password() != null) {
+      if (passwordEncoder.matches(sellerUpdateRequest.password(), sellerEntity.getPassword())) {
+        throw new IllegalArgumentException("Password cannot be the same");
+      }
+      sellerEntity.setPassword(passwordEncoder.encode(sellerUpdateRequest.password()));
     }
+
+    mapper.updateEntityFromResponse(sellerUpdateRequest, sellerEntity);
+    return mapper.entityToResponse(sellerEntity);
+  }
 }

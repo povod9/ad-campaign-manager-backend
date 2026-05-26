@@ -10,9 +10,11 @@ import org.mapstruct.MappingTarget;
 @Mapper(componentModel = "spring")
 public interface SellerMapper {
 
-    SellerResponse entityToResponse(SellerEntity sellerEntity);
-    @Mapping(target = "emeraldAmountFunds", ignore = true)
-    @Mapping(target = "email", ignore = true)
-    @Mapping(target = "password", ignore = true)
-    void updateEntityFromResponse(SellerUpdateRequest sellerUpdateRequest, @MappingTarget SellerEntity sellerEntity);
+  SellerResponse entityToResponse(SellerEntity sellerEntity);
+
+  @Mapping(target = "emeraldAmountFunds", ignore = true)
+  @Mapping(target = "email", ignore = true)
+  @Mapping(target = "password", ignore = true)
+  void updateEntityFromResponse(
+      SellerUpdateRequest sellerUpdateRequest, @MappingTarget SellerEntity sellerEntity);
 }
