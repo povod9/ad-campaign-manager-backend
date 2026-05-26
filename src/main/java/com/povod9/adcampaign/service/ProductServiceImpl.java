@@ -1,6 +1,5 @@
 package com.povod9.adcampaign.service;
 
-import static com.povod9.adcampaign.helper_method.SecurityUtil.getCurrentPrincipalOrThrow;
 
 import com.povod9.adcampaign.dto.PrincipalDto;
 import com.povod9.adcampaign.dto.ProductRequest;
@@ -11,6 +10,7 @@ import com.povod9.adcampaign.exception.AccessDeniedException;
 import com.povod9.adcampaign.mapper.ProductMapper;
 import com.povod9.adcampaign.repository.ProductRepository;
 import com.povod9.adcampaign.repository.SellerRepository;
+import com.povod9.adcampaign.security.SecurityContextService;
 import jakarta.persistence.EntityNotFoundException;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +24,7 @@ public class ProductServiceImpl implements ProductService {
   private final ProductRepository productRepository;
   private final SellerRepository sellerRepository;
   private final ProductMapper mapper;
+  private final SecurityContextService securityContextService;
 
   @Override
   @Transactional
@@ -38,7 +39,7 @@ public class ProductServiceImpl implements ProductService {
 
   @Override
   public ProductResponse productById(Long id) {
-    PrincipalDto principalDto = getCurrentPrincipalOrThrow();
+    PrincipalDto principalDto = securityContextService.getCurrentPrincipalOrThrow();
     ProductEntity productEntity =
         productRepository
             .findById(id)
@@ -49,7 +50,7 @@ public class ProductServiceImpl implements ProductService {
 
   @Override
   public List<ProductResponse> allProduct() {
-    PrincipalDto principalDto = getCurrentPrincipalOrThrow();
+    PrincipalDto principalDto = securityContextService.getCurrentPrincipalOrThrow();
 
     List<ProductEntity> productEntities =
         productRepository.findBySeller_SellerId(principalDto.id());
@@ -60,7 +61,7 @@ public class ProductServiceImpl implements ProductService {
   @Override
   @Transactional
   public ProductResponse updateProductById(Long id, ProductRequest productRequest) {
-    PrincipalDto principalDto = getCurrentPrincipalOrThrow();
+    PrincipalDto principalDto = securityContextService.getCurrentPrincipalOrThrow();
     ProductEntity productEntity =
         productRepository
             .findById(id)
@@ -76,7 +77,7 @@ public class ProductServiceImpl implements ProductService {
   }
 
   private SellerEntity getCurrentSellerOrThrow() {
-    PrincipalDto principalDto = getCurrentPrincipalOrThrow();
+    PrincipalDto principalDto = securityContextService.getCurrentPrincipalOrThrow();
     return sellerRepository
         .findById(principalDto.id())
         .orElseThrow(() -> new EntityNotFoundException("Cannot find by id: " + principalDto.id()));

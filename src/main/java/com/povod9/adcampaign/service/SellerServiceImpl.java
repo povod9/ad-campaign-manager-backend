@@ -1,6 +1,5 @@
 package com.povod9.adcampaign.service;
 
-import static com.povod9.adcampaign.helper_method.SecurityUtil.getCurrentPrincipalOrThrow;
 
 import com.povod9.adcampaign.dto.*;
 import com.povod9.adcampaign.entity.SellerEntity;
@@ -8,6 +7,7 @@ import com.povod9.adcampaign.exception.InvalidCredentialsException;
 import com.povod9.adcampaign.mapper.SellerMapper;
 import com.povod9.adcampaign.repository.SellerRepository;
 import com.povod9.adcampaign.security.JwtCore;
+import com.povod9.adcampaign.security.SecurityContextService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -22,6 +22,7 @@ public class SellerServiceImpl implements SellerService {
   private final PasswordEncoder passwordEncoder;
   private final SellerMapper mapper;
   private final JwtCore jwtCore;
+  private final SecurityContextService securityContextService;
 
   @Override
   @Transactional
@@ -61,7 +62,7 @@ public class SellerServiceImpl implements SellerService {
   @Transactional
   public SellerResponse updateSeller(SellerUpdateRequest sellerUpdateRequest) {
 
-    PrincipalDto principalDto = getCurrentPrincipalOrThrow();
+    PrincipalDto principalDto = securityContextService.getCurrentPrincipalOrThrow();
 
     SellerEntity sellerEntity =
         repository

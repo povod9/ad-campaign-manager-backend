@@ -1,6 +1,5 @@
 package com.povod9.adcampaign.service;
 
-import static com.povod9.adcampaign.helper_method.SecurityUtil.getCurrentPrincipalOrThrow;
 
 import com.povod9.adcampaign.dto.*;
 import com.povod9.adcampaign.entity.CampaignEntity;
@@ -11,6 +10,7 @@ import com.povod9.adcampaign.mapper.CampaignMapper;
 import com.povod9.adcampaign.repository.CampaignRepository;
 import com.povod9.adcampaign.repository.ProductRepository;
 import com.povod9.adcampaign.repository.SellerRepository;
+import com.povod9.adcampaign.security.SecurityContextService;
 import jakarta.persistence.EntityNotFoundException;
 import java.math.BigDecimal;
 import java.util.List;
@@ -26,10 +26,11 @@ public class CampaignServiceImpl implements CampaignService {
   private final ProductRepository productRepository;
   private final SellerRepository sellerRepository;
   private final CampaignMapper mapper;
+  private final SecurityContextService securityContextService;
 
   @Override
   public CampaignResponse campaignById(Long id) {
-    PrincipalDto principalDto = getCurrentPrincipalOrThrow();
+    PrincipalDto principalDto = securityContextService.getCurrentPrincipalOrThrow();
     CampaignEntity campaignEntity = getCampaignOrThrow(id);
     checkCampaignOwnerOrThrow(campaignEntity, principalDto);
     return mapper.entityToResponse(campaignEntity);
@@ -37,7 +38,7 @@ public class CampaignServiceImpl implements CampaignService {
 
   @Override
   public List<CampaignResponse> allCampaigns() {
-    PrincipalDto principalDto = getCurrentPrincipalOrThrow();
+    PrincipalDto principalDto = securityContextService.getCurrentPrincipalOrThrow();
     List<CampaignEntity> campaignEntities =
         campaignRepository.findByProduct_Seller_SellerId(principalDto.id());
     return mapper.listEntityToResponse(campaignEntities);
@@ -46,7 +47,7 @@ public class CampaignServiceImpl implements CampaignService {
   @Override
   @Transactional
   public CampaignResponse createCampaign(CampaignRequest campaignRequest) {
-    PrincipalDto principalDto = getCurrentPrincipalOrThrow();
+    PrincipalDto principalDto = securityContextService.getCurrentPrincipalOrThrow();
 
     ProductEntity productEntity =
         productRepository
@@ -97,7 +98,7 @@ public class CampaignServiceImpl implements CampaignService {
   @Override
   @Transactional
   public void deleteById(Long id) {
-    PrincipalDto principalDto = getCurrentPrincipalOrThrow();
+    PrincipalDto principalDto = securityContextService.getCurrentPrincipalOrThrow();
     CampaignEntity campaignEntity = getCampaignOrThrow(id);
     checkCampaignOwnerOrThrow(campaignEntity, principalDto);
     campaignRepository.delete(campaignEntity);
@@ -106,7 +107,7 @@ public class CampaignServiceImpl implements CampaignService {
   @Override
   @Transactional
   public CampaignResponse updateById(Long id, CampaignUpdateRequest campaignUpdateRequest) {
-    PrincipalDto principalDto = getCurrentPrincipalOrThrow();
+    PrincipalDto principalDto = securityContextService.getCurrentPrincipalOrThrow();
     CampaignEntity campaignEntity = getCampaignOrThrow(id);
     checkCampaignOwnerOrThrow(campaignEntity, principalDto);
     if(campaignUpdateRequest.campaignFund() != null){
